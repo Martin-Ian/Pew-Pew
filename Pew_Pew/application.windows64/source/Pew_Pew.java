@@ -26,17 +26,23 @@ boolean shoot_up, shoot_down, shoot_left, shoot_right;
 //This is so the "camera" follows the player
 float cameraX, cameraY;
 
+//This is the level
+PImage current_level;
+
 //Object declarations
 Player player;
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+ArrayList<Wall> walls = new ArrayList<Wall>();
 
 public void setup()
 {
   
   //fullScreen();
+  rectMode(CENTER);
   cameraX = width/2;
   cameraY = height/2;
-  player = new Player();
+  current_level = loadImage("Levels/Level_01.png");
+  process_level(current_level);
 }
 
 public void draw()
@@ -57,20 +63,24 @@ public void draw()
     }
   }
 
+  for (Wall W : walls)
+  {
+    W.update();
+  }
+
   //This is how the camera follows the player
   cameraX = lerp(cameraX, player.position.x, 0.075f);
   cameraY = lerp(cameraY, player.position.y, 0.075f);
   translate(width/2 - cameraX, height/2 - cameraY);
 
-  //This is temparary... Show the boundry box
-  strokeWeight(5);
-  stroke(0);
-  noFill();
-  rect(0, 0, width, height);
-
   for (Bullet B : bullets)
   {
     B.display();
+  }
+
+  for (Wall W : walls)
+  {
+    W.display();
   }
 
   player.display();
@@ -130,7 +140,6 @@ public boolean set_move(int key, boolean set)
     return set;
   }
 }
-
 /**************************
  * WRITTEN BY: Ian Martin
  * Bullet class
@@ -157,13 +166,12 @@ class Bullet extends Entity
     position = new PVector(locationX, locationY);
     velocity = heading;
     acceleration = new PVector(0, 0);
-    entity_color = color(0);
+    entity_color = color(150, 0, 0);
     shape = "Circle";
     max_speed = 7;
-    diameter = 15;
+    axis = new PVector(15, 15);
   }
 }
-
 /**************************
  * WRITTEN BY: Ian Martin
  * Entity class
@@ -176,9 +184,9 @@ class Entity
   PVector position;
   PVector velocity;
   PVector acceleration;
+  PVector axis;
 
   //These differ for each class
-  float diameter;
   float slowDown;
   float max_speed;
 
@@ -193,7 +201,7 @@ class Entity
     position = new PVector(0, 0);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
-    diameter = 10;
+    axis = new PVector(10, 10);
     slowDown = 1.0f;
     max_speed = 5;
     shape = "Circle";
@@ -220,15 +228,34 @@ class Entity
 
   public void display()
   {
+    fill(entity_color);
+    noStroke();
     if (shape == "Circle")
     {
-      fill(entity_color);
-      noStroke();
-      ellipse(position.x, position.y, diameter/2, diameter/2);
+      ellipse(position.x, position.y, axis.x + 1, axis.y + 1);
+    } else if (shape == "Rectangle")
+    {
+      rect(position.x, position.y, axis.x + 1, axis.y + 1);
     }
   }
 }
-
+public void process_level(PImage level)
+{
+  level.loadPixels();
+  for (int w = 0; w < level.width; w++)
+  {
+    for (int h = 0; h < level.height; h++)
+    {
+      if(level.get(w, h) == color(0))
+      {
+        walls.add(new Wall(w * 50, h * 50));
+      } else if(level.get(w, h) == color(0, 0, 255))
+      {
+        player = new Player(w * 50, h * 50);
+      }
+    }
+  }
+}
 /**************************
  * WRITTEN BY: Ian Martin
  * Player class
@@ -251,10 +278,26 @@ class Player extends Entity
     position = new PVector(width/2, height/2);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
-    diameter = 100;
+    axis = new PVector(50, 50);
     slowDown = 0.95f;
     entity_color = color(150, 20, 150);
-    shape = "Circle";
+    shape = "Rectangle";
+    fire_delay = 20;
+    cool_down = 0;
+    max_speed = 3;
+    speed = 1;
+  }
+
+  Player(float posx, float posy)
+  {
+    super(); 
+    position = new PVector(posx, posy);
+    velocity = new PVector(0, 0);
+    acceleration = new PVector(0, 0);
+    axis = new PVector(50, 50);
+    slowDown = 0.95f;
+    entity_color = color(150, 20, 150);
+    shape = "Rectangle";
     fire_delay = 20;
     cool_down = 0;
     max_speed = 3;
@@ -312,7 +355,24 @@ class Player extends Entity
     }
   }
 }
+/**************************
+ * WRITTEN BY: Ian Martin
+ * Wall class
+ *************************/
 
+//This is a child of Entity
+class Wall extends Entity
+{
+  Wall(float posx, float posy)
+  {
+    super();
+    position = new PVector(posx, posy);
+    axis = new PVector(50, 50);
+    entity_color = color(20);
+    max_speed = 0;
+    shape = "Rectangle";
+  }
+}
   public void settings() {  size(600, 600); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "Pew_Pew" };

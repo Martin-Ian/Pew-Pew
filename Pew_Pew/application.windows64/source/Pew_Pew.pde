@@ -10,17 +10,23 @@ boolean shoot_up, shoot_down, shoot_left, shoot_right;
 //This is so the "camera" follows the player
 float cameraX, cameraY;
 
+//This is the level
+PImage current_level;
+
 //Object declarations
 Player player;
 ArrayList<Bullet> bullets = new ArrayList<Bullet>();
+ArrayList<Wall> walls = new ArrayList<Wall>();
 
 void setup()
 {
   size(600, 600);
   //fullScreen();
+  rectMode(CENTER);
   cameraX = width/2;
   cameraY = height/2;
-  player = new Player();
+  current_level = loadImage("Levels/Level_01.png");
+  process_level(current_level);
 }
 
 void draw()
@@ -41,20 +47,24 @@ void draw()
     }
   }
 
+  for (Wall W : walls)
+  {
+    W.update();
+  }
+
   //This is how the camera follows the player
   cameraX = lerp(cameraX, player.position.x, 0.075);
   cameraY = lerp(cameraY, player.position.y, 0.075);
   translate(width/2 - cameraX, height/2 - cameraY);
 
-  //This is temparary... Show the boundry box
-  strokeWeight(5);
-  stroke(0);
-  noFill();
-  rect(0, 0, width, height);
-
   for (Bullet B : bullets)
   {
     B.display();
+  }
+
+  for (Wall W : walls)
+  {
+    W.display();
   }
 
   player.display();

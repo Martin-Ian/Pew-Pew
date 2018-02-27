@@ -20,10 +20,26 @@ class Player extends Entity
     position = new PVector(width/2, height/2);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
-    diameter = 100;
+    axis = new PVector(50, 50);
     slowDown = 0.95;
     entity_color = color(150, 20, 150);
-    shape = "Circle";
+    shape = "Rectangle";
+    fire_delay = 20;
+    cool_down = 0;
+    max_speed = 3;
+    speed = 1;
+  }
+
+  Player(float posx, float posy)
+  {
+    super(); 
+    position = new PVector(posx, posy);
+    velocity = new PVector(0, 0);
+    acceleration = new PVector(0, 0);
+    axis = new PVector(50, 50);
+    slowDown = 0.95;
+    entity_color = color(150, 20, 150);
+    shape = "Rectangle";
     fire_delay = 20;
     cool_down = 0;
     max_speed = 3;

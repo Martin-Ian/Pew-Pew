@@ -10,9 +10,9 @@ class Entity
   PVector position;
   PVector velocity;
   PVector acceleration;
+  PVector axis;
 
   //These differ for each class
-  float diameter;
   float slowDown;
   float max_speed;
 
@@ -27,7 +27,7 @@ class Entity
     position = new PVector(0, 0);
     velocity = new PVector(0, 0);
     acceleration = new PVector(0, 0);
-    diameter = 10;
+    axis = new PVector(10, 10);
     slowDown = 1.0;
     max_speed = 5;
     shape = "Circle";
@@ -54,11 +54,14 @@ class Entity
 
   void display()
   {
+    fill(entity_color);
+    noStroke();
     if (shape == "Circle")
     {
-      fill(entity_color);
-      noStroke();
-      ellipse(position.x, position.y, diameter/2, diameter/2);
+      ellipse(position.x, position.y, axis.x + 1, axis.y + 1);
+    } else if (shape == "Rectangle")
+    {
+      rect(position.x, position.y, axis.x + 1, axis.y + 1);
     }
   }
 }

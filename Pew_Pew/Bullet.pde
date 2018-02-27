@@ -24,9 +24,9 @@ class Bullet extends Entity
     position = new PVector(locationX, locationY);
     velocity = heading;
     acceleration = new PVector(0, 0);
-    entity_color = color(0);
+    entity_color = color(150, 0, 0);
     shape = "Circle";
     max_speed = 7;
-    diameter = 15;
+    axis = new PVector(15, 15);
   }
 }
